@@ -1,11 +1,8 @@
 let srtCounter = 0, vttCounter = 0;
 const
-    app = require('fastify')(),
     fs = require('fs'),
     path = require('path'),
-    customPort = Number(process.argv[2]),
-    port = isNaN(customPort) ? 8004 : customPort,
-    fileName = 'bankrott_urn ard subtitle english.xml',
+    fileName = 'subtitle english.xml',
     scriptPath = path.resolve(__dirname, fileName),
     file = fs.readFileSync(scriptPath, 'utf8'),
     {XMLParser} = require('fast-xml-parser'),
@@ -27,7 +24,7 @@ const
         const
             style = l['@_style'],
             styleMap = {textLeft: ' align:start', textRight: ' align:end'},
-            voiceMap = {textYellow: 'vincent', textCyan: 'rogov'},
+            voiceMap = {S4: 'textYellow', S5: 'textCyan'},
             span = l['tt:span'];
         let text, line;
 
@@ -53,21 +50,12 @@ const
 ::cue {
   background-color: #000000c2;
 }
-::cue(.vincent) {
+::cue(.textYellow) {
   color: yellow;
 }
-::cue(.rogov) {
+::cue(.textCyan) {
   color: cyan;
 }\n\n`;
 
-console.log(lines);
-
 fs.writeFileSync(path.resolve(__dirname, 'subs.srt'), srt);
 fs.writeFileSync(path.resolve(__dirname, 'subs.vtt'), vttStyling + vtt);
-
-app.listen({port, host: '::'}, (err) => {
-    if (err) {
-        app.log.error(err);
-        process.exit(1);
-    }
-});
